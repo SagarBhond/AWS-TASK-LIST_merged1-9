@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="background.jpg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesture Controls</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: url('img/background.jpg') no-repeat center center/cover;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .gesture-button {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.2s;
+            width: 300px;
+            text-align: center;
+        }
+        .gesture-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 18px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <button class="gesture-button" onclick="runScript('run1', 'run')">Start Volume Gesture</button>
+    <button class="gesture-button" onclick="runScript('run1', 'stop')">Stop Volume Gesture</button>
+    <button class="gesture-button" onclick="runScript('run2', 'run')">Start Brightness Gesture</button>
+    <button class="gesture-button" onclick="runScript('run2', 'stop')">Stop Brightness Gesture</button>
+
+    <div id="status">Status: Waiting for action...</div>
+
+    <script>
+        async function runScript(scriptName, action) {
+            let url = `http://127.0.0.1:5500/${action}/${scriptName}`;            // Ensure your server is running on this port
+            document.getElementById("status").innerText = "Status: Processing...";
+
+            try {
+                let response = await fetch(url, { method: 'GET', mode: 'cors' });
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+
+                let data = await response.json();
+                document.getElementById("status").innerText = `Status: ${data.message}`;
+                console.log(data.message);
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("status").innerText = "Status: Error connecting to server.";
+            }
+        }
+    </script>
+</body>
+</html>
